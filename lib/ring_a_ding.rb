@@ -15,4 +15,9 @@ require "ring_a_ding/version"
 # require 'ring_a_ding/export'
 module RingADing
   # Your code goes here...
+  # body = {"ACCOUNT" => '33180898931', "CALLEE" => '0762683337'}
+  # ring = RingADing::Request.new(end_point_ext: '.html?')
+  # binding.pry
+  # ring.makecall.retrieve(params: body)
+  # binding.pry
 end

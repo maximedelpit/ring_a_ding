@@ -2,16 +2,19 @@ require 'pry-byebug'
 module RingADing
   class Request
 
-    attr_accessor :api_key, :api_endpoint, :timeout, :open_timeout, :proxy, :faraday_adapter, :symbolize_keys, :debug, :logger
-
+    ATTR_ACCS = [:api_key, :api_secret, :api_endpoint, :end_point_ext, :timeout, :open_timeout, :proxy, :faraday_adapter, :symbolize_keys, :debug, :logger]
     DEFAULT_TIMEOUT = 60
     DEFAULT_OPEN_TIMEOUT = 60
 
-    def initialize(api_key: nil, api_secret: nil, api_endpoint: nil, timeout: nil, open_timeout: nil, proxy: nil, faraday_adapter: nil, symbolize_keys: false, debug: false, logger: nil)
+    ATTR_ACCS.each {|_attr| attr_accessor _attr}
+    # Hash[ATTR_ACCS.map {|v| [v, nil]}]
+
+    def initialize(api_key: nil, api_secret: nil, api_endpoint: nil, end_point_ext: nil, timeout: nil, open_timeout: nil, proxy: nil, faraday_adapter: nil, symbolize_keys: false, debug: false, logger: nil)
       @path_parts = []
       @api_key = (api_key || self.class.api_key || ENV['KEYYO_API_KEY'])&.strip
       @api_secret = (api_secret || self.class.api_secret || ENV['KEYYO_API_SECRET'])&.strip
       @api_endpoint = api_endpoint || self.class.api_endpoint
+      @end_point_ext = end_point_ext || self.class.end_point_ext
       @timeout = timeout || self.class.timeout || DEFAULT_TIMEOUT
       @open_timeout = open_timeout || self.class.open_timeout || DEFAULT_OPEN_TIMEOUT
       @proxy = proxy || self.class.proxy || ENV['KEYYO_PROXY'] # useful ?
@@ -42,7 +45,8 @@ module RingADing
     end
 
     def path
-      "#{@path_parts.join('/')}.html?"
+      ext = self.end_point_ext
+      "#{@path_parts.join('/')}#{ext}"
     end
 
     def create(params: nil, headers: nil, body: nil)
@@ -75,7 +79,6 @@ module RingADing
       reset
     end
 
-
     protected
 
     def reset
@@ -83,7 +86,7 @@ module RingADing
     end
 
     class << self
-      attr_accessor :api_key, :api_endpoint, :timeout, :open_timeout, :proxy, :faraday_adapter, :symbolize_keys, :debug, :logger
+      ATTR_ACCS.each {|_attr| attr_accessor _attr}
 
       def method_missing(sym, *args, &block)
         new(api_key: self.api_key, api_secret: self.api_secret, api_endpoint: self.api_endpoint, timeout: self.timeout, open_timeout: self.open_timeout, faraday_adapter: self.faraday_adapter, symbolize_keys: self.symbolize_keys, debug: self.debug, proxy: self.proxy, logger: self.logger).send(sym, *args, &block)
