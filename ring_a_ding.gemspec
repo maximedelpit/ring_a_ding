@@ -36,7 +36,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency('faraday', '>= 0.9.1')
   spec.add_dependency('multi_json', '>= 1.11.0')
   # spec.add_dependency 'oauth2', '~> 1.4'
-  # spec.add_dependency 'omniauth-keyyo', '>= 0.1.0'
+  spec.add_runtime_dependency 'omniauth-keyyo', '~> 0.1.O'
+
 
 
   spec.add_development_dependency "bundler", "~> 1.16"
