@@ -1,3 +1,10 @@
+GIT
+  remote: https://github.com/maximedelpit/omniauth-keyyo.git
+  revision: e1c2dc19dd877cb410153f7aad50f12d36b744cf
+  specs:
+    omniauth-keyyo (0.1.0)
+      omniauth-oauth2 (~> 1.2)
+
 PATH
   remote: .
   specs:
@@ -11,17 +18,33 @@ GEM
     byebug (10.0.2)
     coderay (1.1.2)
     diff-lcs (1.3)
-    faraday (0.15.2)
+    faraday (0.12.2)
       multipart-post (>= 1.2, < 3)
+    hashie (3.5.7)
+    jwt (1.5.6)
     method_source (0.9.0)
     multi_json (1.13.1)
+    multi_xml (0.6.0)
     multipart-post (2.0.0)
+    oauth2 (1.4.0)
+      faraday (>= 0.8, < 0.13)
+      jwt (~> 1.0)
+      multi_json (~> 1.3)
+      multi_xml (~> 0.5)
+      rack (>= 1.2, < 3)
+    omniauth (1.8.1)
+      hashie (>= 3.4.6, < 3.6.0)
+      rack (>= 1.6.2, < 3)
+    omniauth-oauth2 (1.5.0)
+      oauth2 (~> 1.1)
+      omniauth (~> 1.2)
     pry (0.11.3)
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
     pry-byebug (3.6.0)
       byebug (~> 10.0)
       pry (~> 0.10)
+    rack (2.0.5)
     rake (10.5.0)
     rspec (3.7.0)
       rspec-core (~> 3.7.0)
@@ -42,6 +65,7 @@ PLATFORMS
 
 DEPENDENCIES
   bundler (~> 1.16)
+  omniauth-keyyo!
   pry-byebug
   rake (~> 10.0)
   ring_a_ding!

@@ -41,6 +41,7 @@ RSpec.describe "Request attributes" do
   end
 
   it "is a Logger instance by default" do
+    binding.pry
     logger = double(:logger)
     expect(ring_a_ding.logger).to be_a Logger
   end
