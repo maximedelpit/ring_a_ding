@@ -1,7 +1,5 @@
 module RingADing
   class APIRequest
-    # include Helpers
-    BASE_API_URL = "https://ssl.keyyo.com/"
 
     def initialize(builder: nil)
       @request_builder = builder
@@ -29,15 +27,14 @@ module RingADing
 
     protected
 
-    # Convenience accessors
-    %i(api_key api_endpoint timeout open_timeout proxy faraday_adapter symbolize_keys).each do |meth|
+    # Convenience accessors => Refacto => try not to list but instead use @request_builder directly (class method ? / intialize ?)
+    %i(api_key api_secret base_api_url api_endpoint timeout open_timeout proxy faraday_adapter symbolize_keys).each do |meth|
       define_method(meth) { @request_builder.send(meth) }
     end
 
     # Helpers
     def handle_error(error)
       error_params = {}
-
       begin
         if error.is_a?(Faraday::Error::ClientError) && error.response
           error_params[:status_code] = error.response[:status]
@@ -60,7 +57,6 @@ module RingADing
       end
 
       error_to_raise = KeyyoError.new(error.message, error_params)
-
       raise error_to_raise
     end
 
@@ -77,15 +73,19 @@ module RingADing
     end
 
     def rest_client
-      client = Faraday.new(self.api_url, proxy: self.proxy, ssl: { version: "TLSv1_2" }) do |faraday|
+      client = Faraday.new(self.api_url, proxy: self.proxy) do |faraday| #, ssl: { version: "TLSv1_2" }
+        # faraday.request :digest, self.api_key, self.api_secret
         faraday.response :raise_error
         faraday.adapter faraday_adapter
         if @request_builder.debug
           faraday.response :logger, @request_builder.logger, bodies: true
         end
       end
-      client.basic_auth('apikey', self.api_key)
+      client.basic_auth(self.api_key, self.api_secret)
       client
+      # puts "===========================<>>>>#{@request_builder.oauth2_token}"
+
+      # return Client.new(api_url: self.api_url, proxy: self.proxy, token: @request_builder.oauth2_token, faraday_adapter: faraday_adapter, logger: @request_builder.logger, ssl: { version: "TLSv1_2"}).authenticate
     end
 
     def parse_response(response)
@@ -95,6 +95,7 @@ module RingADing
         begin
           headers = response.headers
           body = MultiJson.load(response.body, symbolize_keys: symbolize_keys)
+          binding.pry
           parsed_response = Response.new(headers: headers, body: body)
         rescue MultiJson::ParseError
           error_params = { title: "UNPARSEABLE_RESPONSE", status_code: 500 }
@@ -108,16 +109,16 @@ module RingADing
 
     def validate_api_key
       unless self.api_key #&& (api_key["-"] || self.api_endpoint)
-        raise RingADing::KeyyoError, "You must set an api_key prior to making a call"
+        raise KeyyoError, "You must set an api_key prior to making a call"
       end
     end
 
     def api_url
-      BASE_API_URL + @request_builder.path
+      "#{@request_builder.base_api_url}#{@request_builder.path}"
     end
 
     def build_http_request(http_verb, http_options)
-      validate_api_key
+      # validate_api_key # useless since no api_key
       begin
         response = self.rest_client.send(http_verb) do |request|
           configure_request(http_options.merge(request: request))
@@ -128,12 +129,12 @@ module RingADing
       end
     end
 
-    def get_args(method_name, method_args)
-      method(__method__).parameters.inject({}) do |m, arg|
-        m[arg[1].to_sym] = binding.local_variable_get(arg[1])
-        m
-      end
-    end
+    # def get_args(method_name, method_args)
+    #   method(__method__).parameters.inject({}) do |m, arg|
+    #     m[arg[1].to_sym] = binding.local_variable_get(arg[1])
+    #     m
+    #   end
+    # end
 
     def get_args(ext_binding)
       raise ArgumentError, "Binding expected, #{ext_binding.class.name} given" unless ext_binding.is_a?(Binding)
