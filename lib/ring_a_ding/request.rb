@@ -1,46 +1,25 @@
-require 'pry-byebug'
+# TO DO : Replace KeyyoError with Internal Error
 module RingADing
   class Request
 
-    ATTR_ACCS = [
-      :api_key, :api_secret, :oauth2_token, :base_api_url, :api_endpoint,
-      :timeout, :open_timeout, :proxy, :faraday_adapter,
-      :symbolize_keys, :debug, :logger
-    ]
     DEFAULT_TIMEOUT = 60
     DEFAULT_OPEN_TIMEOUT = 60
-    BASE_API_URL = 'https://ssl.keyyo.com/' # TEST TO DO => must provide a BASE API URL
-
+    BASE_API_URL = nil
+    ATTR_ACCS = %i(:client :base_api_url :options)#api_endpoint
     ATTR_ACCS.each {|_attr| attr_accessor _attr}
     # Hash[ATTR_ACCS.map {|v| [v, nil]}]
 
     # Refacto: change initialize params make it an options at list
     # Refacto : link this to client => module ?
     # Remove and put in client :api_key, :api_secret, :oauth2_token, OPTIONS=> :timeout, :open_timeout, :proxy, :faraday_adapter, symbolize_keys: false, debug: false, :logger
-    def initialize(api_key: nil, api_secret: nil, oauth2_token: nil, base_api_url: nil, api_endpoint: nil, timeout: nil, open_timeout: nil, proxy: nil, faraday_adapter: nil, symbolize_keys: false, debug: false, logger: nil)
+    def initialize(client, options)
+      @client = instantiate_client(client, options)
       @path_parts = []
-      @api_key = (api_key || ENV['KEYYO_API_KEY'])&.strip
-      @api_secret = (api_secret || ENV['KEYYO_API_SECRET'])&.strip
-      @oauth2_token = oauth2_token
-      @base_api_url = base_api_url || BASE_API_URL
-      @api_endpoint = api_endpoint
-      @timeout = timeout || DEFAULT_TIMEOUT
-      @open_timeout = open_timeout || DEFAULT_OPEN_TIMEOUT
-      @proxy = proxy || ENV['KEYYO_PROXY'] # useful ?
-      @faraday_adapter = faraday_adapter || Faraday.default_adapter
-      @symbolize_keys = symbolize_keys || false
-      @debug = debug || false
-      @logger = logger || ::Logger.new(STDOUT)
-    end
-
-    def manager_api
-      @base_api_url = RingADing::ManagerRequest::BASE_API_URL
-      return self
-    end
-
-    def cti_api
-      @base_api_url = RingADing::CTIRequest::BASE_API_URL
-      return self
+      @base_api_url = options[:base_api_url] || BASE_API_URL
+      # @api_endpoint = options[:api_endpoint]
+      unless @base_api_url
+        raise KeyyoError.new("Missing API Endpoint", {title: 'Missing API Endpoint', error: 500})
+      end
     end
 
     def method_missing(method, *args) # keep here
@@ -59,8 +38,8 @@ module RingADing
       args.length == 0 ? method_missing(:send, args) : __send__(*args)
     end
 
-    def path # keep here and remove .html REFACTO
-      "#{@path_parts.join('/')}.html"
+    def path # keep here
+      "@base_api_url#{@path_parts.join('/')}"
     end
 
     def create(params: nil, headers: nil, body: nil) # keep here
@@ -93,31 +72,21 @@ module RingADing
       reset
     end
 
-    # # This one is used to find the relevant Request API class so that client
-    # # can use request automatically, without requiring the user to specify which API he wants to use
-    # # PB Base API URL is always nil...
-    # def find_relavant_api
-    #   Dir.foreach('lib/ring_a_ding/request') do |item|
-    #     begin
-    #       klass_name =
-    #       klass_name = "RingADing::#{klass_name}"
-    #       klass = Object.const_get(klass_name)
-    #       Object.const_get("#{klass}::BASE_API_URL") == self.base_api_url ? break : next
-    #     rescue NameError
-    #       error_params = { title: "UKNOWN API CLASS", status_code: 500 }
-    #       error = KeyyoError.new("UKNOWN API CLASS: #{response.body}", error_params)
-    #       raise error
-    #     end
-    #   end
-    #   return klass
-    # end
-
     protected
 
     def reset
       @path_parts = []
     end
 
+    def instantiate_client(c, opts)
+      if c.is_a?(Client)
+        c
+      elsif c.is_a(Hash)
+        Client.new(auth_type: c[:auth_type], api_key: c[:api_key], api_secret: c[:api_secret], options: opts)
+      else
+        raise KeyyoError.new("client must be a Client or a Hash", {title: "ClientError", error: 500})
+      end
+    end
     # class << self # Useless & remove from initialize & tests => we want to force use of an instance for client
     #   ATTR_ACCS.each {|_attr| attr_accessor _attr}
 

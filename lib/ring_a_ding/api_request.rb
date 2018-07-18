@@ -28,6 +28,7 @@ module RingADing
     protected
 
     # Convenience accessors => Refacto => try not to list but instead use @request_builder directly (class method ? / intialize ?)
+    # REFACTO => To be reviewed
     %i(api_key api_secret base_api_url api_endpoint timeout open_timeout proxy faraday_adapter symbolize_keys).each do |meth|
       define_method(meth) { @request_builder.send(meth) }
     end
@@ -73,19 +74,22 @@ module RingADing
     end
 
     def rest_client
-      client = Faraday.new(self.api_url, proxy: self.proxy) do |faraday| #, ssl: { version: "TLSv1_2" }
-        # faraday.request :digest, self.api_key, self.api_secret
-        faraday.response :raise_error
-        faraday.adapter faraday_adapter
-        if @request_builder.debug
-          faraday.response :logger, @request_builder.logger, bodies: true
-        end
-      end
-      client.basic_auth(self.api_key, self.api_secret)
-      client
-      # puts "===========================<>>>>#{@request_builder.oauth2_token}"
+      # client = Faraday.new(self.api_url, proxy: self.proxy) do |faraday| #, ssl: { version: "TLSv1_2" }
+      #   # faraday.request :digest, self.api_key, self.api_secret
+      #   faraday.response :raise_error
+      #   faraday.adapter faraday_adapter
+      #   if @request_builder.debug
+      #     faraday.response :logger, @request_builder.logger, bodies: true
+      #   end
+      # end
+      # client.basic_auth(self.api_key, self.api_secret)
+      # client
+      # # puts "===========================<>>>>#{@request_builder.oauth2_token}"
 
-      # return Client.new(api_url: self.api_url, proxy: self.proxy, token: @request_builder.oauth2_token, faraday_adapter: faraday_adapter, logger: @request_builder.logger, ssl: { version: "TLSv1_2"}).authenticate
+      # # return Client.new(api_url: self.api_url, proxy: self.proxy, token: @request_builder.oauth2_token, faraday_adapter: faraday_adapter, logger: @request_builder.logger, ssl: { version: "TLSv1_2"}).authenticate
+
+      @request_builder.client.options[:url] = @request_builder.api_url
+      return @request_builder.client.connect
     end
 
     def parse_response(response)
@@ -113,9 +117,9 @@ module RingADing
       end
     end
 
-    def api_url
-      "#{@request_builder.base_api_url}#{@request_builder.path}"
-    end
+    # def api_url
+    #   "#{@request_builder.base_api_url}#{@request_builder.path}"
+    # end
 
     def build_http_request(http_verb, http_options)
       # validate_api_key # useless since no api_key
