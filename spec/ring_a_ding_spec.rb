@@ -54,18 +54,6 @@ RSpec.describe "Request attributes" do
   #   csi = "xxxx"
   #   ring_a_ding.sendsms.create(params: {ACCOUNT: csi, CALLEE: 'xxxxx', MSG: 'Test'})
   # end
-
-  # it 'is a quick & dirty test' do
-  #   api_key = 'xxx'
-  #   api_secret = 'xxx'
-  #   client = RingADing::Client.new(auth_type: 'Bearer', api_key: api_key, api_secret: api_secret)
-  #   ring_a_ding = RingADing::OauthRequest.new(client)
-  #   info1 = ring_a_ding.authorize("http://localhost:3000/users/auth/keyyo/callback")
-  #   # Set base url for authorize
-  #   ring_a_ding.base_api_url = "https://api.keyyo.com/oauth2/"
-  #   body = {xxxx}
-  #   info1 = ring_a_ding.token.create(body: body)
-  # end
 end
 
 
