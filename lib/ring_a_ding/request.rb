@@ -75,6 +75,8 @@ module RingADing
 
     def reset
       @path_parts = []
+      @options[:url] = nil if @options[:url]
+      @client.options[:url] = nil if @client.options[:url]
     end
 
     def instantiate_client(c, opts)
