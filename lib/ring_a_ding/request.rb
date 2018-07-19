@@ -5,17 +5,18 @@ module RingADing
     DEFAULT_TIMEOUT = 60
     DEFAULT_OPEN_TIMEOUT = 60
     BASE_API_URL = nil
-    ATTR_ACCS = %i(:client :base_api_url :options)#api_endpoint
+    ATTR_ACCS = %i(client base_api_url options path_parts)#api_endpoint
     ATTR_ACCS.each {|_attr| attr_accessor _attr}
     # Hash[ATTR_ACCS.map {|v| [v, nil]}]
 
     # Refacto: change initialize params make it an options at list
     # Refacto : link this to client => module ?
     # Remove and put in client :api_key, :api_secret, :oauth2_token, OPTIONS=> :timeout, :open_timeout, :proxy, :faraday_adapter, symbolize_keys: false, debug: false, :logger
-    def initialize(client, options)
+    def initialize(client, options={})
       @client = instantiate_client(client, options)
       @path_parts = []
-      @base_api_url = options[:base_api_url] || BASE_API_URL
+      @base_api_url = options[:base_api_url] || self.class::BASE_API_URL
+      @options = options
       # @api_endpoint = options[:api_endpoint]
       unless @base_api_url
         raise KeyyoError.new("Missing API Endpoint", {title: 'Missing API Endpoint', error: 500})
@@ -39,7 +40,7 @@ module RingADing
     end
 
     def path # keep here
-      "@base_api_url#{@path_parts.join('/')}"
+      "#{@base_api_url}#{@path_parts.join('/')}"
     end
 
     def create(params: nil, headers: nil, body: nil) # keep here
@@ -81,7 +82,7 @@ module RingADing
     def instantiate_client(c, opts)
       if c.is_a?(Client)
         c
-      elsif c.is_a(Hash)
+      elsif c.is_a?(Hash)
         Client.new(auth_type: c[:auth_type], api_key: c[:api_key], api_secret: c[:api_secret], options: opts)
       else
         raise KeyyoError.new("client must be a Client or a Hash", {title: "ClientError", error: 500})

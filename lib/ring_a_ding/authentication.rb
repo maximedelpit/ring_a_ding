@@ -1,3 +1,5 @@
+# TO DO : Replace KeyyoError with Internal Error
+# Inspiration form Octokit gem
 module RingADing
   module Authentication
      # Indicates if the client was supplied  Basic Auth
