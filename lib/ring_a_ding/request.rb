@@ -2,8 +2,6 @@
 module RingADing
   class Request
 
-    DEFAULT_TIMEOUT = 60
-    DEFAULT_OPEN_TIMEOUT = 60
     BASE_API_URL = nil
     ATTR_ACCS = %i(client base_api_url options path_parts)#api_endpoint
     ATTR_ACCS.each {|_attr| attr_accessor _attr}

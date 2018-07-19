@@ -1,8 +1,10 @@
 # TO DO : Replace KeyyoError with Internal Error
 module RingADing
   class Client
+
     include RingADing::Authentication
-    # We use the same syntax for all authorization type id / api_secret
+    # We use the same syntax for all authorization type id / token
+
     # API KEY / SECRET
     # Client.new(auth_type: 'api-key', api_key: your_api_key, api_secret: your_api_secret)
     #
@@ -17,6 +19,7 @@ module RingADing
     MANDATORY_PARAMS.push(:options).each {|_attr| attr_accessor _attr}
     DEFAULT_TIMEOUT = 60
     DEFAULT_OPEN_TIMEOUT = 60
+
     # Methodo TBD
     def initialize(auth_type: nil, api_key: nil, api_secret: nil, options: {})
       @auth_type = auth_type
@@ -55,7 +58,6 @@ module RingADing
         http.adapter @options[:adapter]
       end
     end
-
 
     private
 
