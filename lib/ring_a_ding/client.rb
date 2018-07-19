@@ -1,8 +1,7 @@
 module RingADing
   class Client
+
     include RingADing::Authentication
-
-
     # We use the same syntax for all authorization type id / token
     # API KEY / SECRET
     # Client.new(auth_type: 'api-key', login: your_api_key, token: your_api_secret)

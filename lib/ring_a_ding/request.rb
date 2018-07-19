@@ -7,6 +7,7 @@ module RingADing
       :timeout, :open_timeout, :proxy, :faraday_adapter,
       :symbolize_keys, :debug, :logger
     ]
+
     DEFAULT_TIMEOUT = 60
     DEFAULT_OPEN_TIMEOUT = 60
     BASE_API_URL = 'https://ssl.keyyo.com/' # TEST TO DO => must provide a BASE API URL
@@ -117,18 +118,6 @@ module RingADing
     def reset
       @path_parts = []
     end
-
-    # class << self # Useless & remove from initialize & tests => we want to force use of an instance for client
-    #   ATTR_ACCS.each {|_attr| attr_accessor _attr}
-
-    #   def method_missing(sym, *args, &block)
-    #     new(api_key: self.api_key, api_secret: self.api_secret, oauth2_token: self.oauth2_token, base_api_url: self.base_api_url, api_endpoint: self.api_endpoint, timeout: self.timeout, open_timeout: self.open_timeout, faraday_adapter: self.faraday_adapter, symbolize_keys: self.symbolize_keys, debug: self.debug, proxy: self.proxy, logger: self.logger).send(sym, *args, &block)
-    #   end
-
-    #   def respond_to_missing?(method_name, include_private = false)
-    #     true
-    #   end
-    # end
   end
 end
 
