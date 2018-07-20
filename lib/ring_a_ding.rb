@@ -2,6 +2,7 @@
 
 require 'pry-byebug'
 require 'faraday'
+require 'faraday/digestauth'
 require 'multi_json'
 require 'cgi'
 require 'logger'

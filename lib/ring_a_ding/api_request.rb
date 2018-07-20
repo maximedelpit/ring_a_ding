@@ -86,8 +86,9 @@ module RingADing
           body = MultiJson.load(response.body, symbolize_keys: @request_builder.options[:symbolize_keys])
           parsed_response = Response.new(headers: headers, body: body)
         rescue MultiJson::ParseError
-          error_params = { title: "UNPARSEABLE_RESPONSE", status_code: 500 }
-          error = KeyyoError.new("Unparseable response: #{response.body}", error_params)
+          parsed_response = Response.new(headers: headers, body: response.body)
+          error_params = { title: "UNPARSEABLE_JSON_RESPONSE", status_code: response.status, response_error_status_code: 500, parsed_response: parsed_response}
+          error = KeyyoError.new("Unparseable JSON response: #{response.body}", error_params)
           raise error
         end
       end
@@ -109,6 +110,7 @@ module RingADing
       # validate_api_key # useless since no api_key
       begin
         response = self.rest_client.send(http_verb) do |request|
+          http_options[:body] = MultiJson.dump(http_options[:body]) if http_options[:body]
           configure_request(http_options.merge(request: request))
         end
         parse_response(response)

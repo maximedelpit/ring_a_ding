@@ -4,6 +4,7 @@ module RingADing
 
     BASE_API_URL = nil
     ATTR_ACCS = %i(client base_api_url options path_parts)#api_endpoint
+    SUB_SYM = '_' # used to fit method_missing undersocre with endpoint format (xxx_yyy / xxx-yyy)
     ATTR_ACCS.each {|_attr| attr_accessor _attr}
     # Hash[ATTR_ACCS.map {|v| [v, nil]}]
 
@@ -23,7 +24,7 @@ module RingADing
 
     def method_missing(method, *args) # keep here
       # To support underscores, we replace them with hyphens when calling the API
-      @path_parts << method.to_s.gsub("_", "-").downcase
+      @path_parts << method.to_s.gsub("_", SUB_SYM).downcase # it seems Keyyo use underscores
       @path_parts << args if args.length > 0
       @path_parts.flatten!
       self

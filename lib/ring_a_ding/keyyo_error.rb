@@ -1,6 +1,6 @@
 module RingADing
   class KeyyoError < StandardError
-    attr_reader :title, :detail, :body, :raw_body, :status_code
+    attr_reader :title, :detail, :body, :raw_body, :status_code, :response_error_status_code, :parsed_response
 
     def initialize(message = "", params = {})
       @title       = params[:title]
@@ -8,6 +8,8 @@ module RingADing
       @body        = params[:body]
       @raw_body    = params[:raw_body]
       @status_code = params[:status_code]
+      @response_error_status_code = params[:response_error_status_code]
+      @parsed_response = params[:parsed_response]
 
       super(message)
     end
@@ -19,7 +21,7 @@ module RingADing
     private
 
     def instance_variables_to_s
-      [:title, :detail, :body, :raw_body, :status_code].map do |attr|
+      [:title, :detail, :body, :raw_body, :status_code, :response_error_status_code, :parsed_response].map do |attr|
         attr_value = send(attr)
 
         "@#{attr}=#{attr_value.inspect}"

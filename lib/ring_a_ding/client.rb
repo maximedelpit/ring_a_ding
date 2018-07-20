@@ -45,11 +45,13 @@ module RingADing
 
     def connect
       set_creds_given_auth_type
-      return Faraday.new(@options[:url], proxy: @options[:proxy], ssl: @options[:ssl]) do |http|
+      conn = Faraday.new(@options[:url], proxy: @options[:proxy], ssl: @options[:ssl]) do |http|
         http.response :raise_error
         http.response :logger, @options[:logger], bodies: true if @options[:debug]
         if basic_authenticated?
-          http.basic_auth(@login, @token)
+          http.basic_auth(@login, @password)
+        elsif digest_authenticated?
+          http.request :digest, @login, @password
         elsif token_authenticated?
           http.authorization :token, @token
         elsif bearer_authenticated?
@@ -57,6 +59,7 @@ module RingADing
         end
         http.adapter @options[:adapter]
       end
+      return conn
     end
 
     private
