@@ -46,18 +46,13 @@ RSpec.describe "Request attributes" do
   # end
 
   # it 'is a quick & dirty test' do
-  #   api_key = 'xxxx'
+  #   api_key = 'xxx'
   #   api_secret = 'xxx'
   #   proxy = 'xxx'
-  #   client = RingADing::Client.new(auth_type: 'basic', api_key: api_key, api_secret: api_secret)
+  #   client = RingADing::Client.new(auth_type: 'digest', api_key: api_key, api_secret: api_secret)
   #   ring_a_ding = RingADing::CtiRequest.new(client)
-  #   csi = "xxxx"
-  #   ring_a_ding.sendsms.create(params: {ACCOUNT: csi, CALLEE: 'xxxxx', MSG: 'Test'})
+  #   csi = "xxx"
+  #   binding.pry
+  #   ring_a_ding.sendsms.retrieve(params: {ACCOUNT: csi, CALLEE: 'xxx', MSG: 'Test ok man?'})
   # end
 end
-
-
-
-
-
-

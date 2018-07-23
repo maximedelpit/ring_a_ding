@@ -34,6 +34,7 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 2.3.0'
 
   spec.add_dependency('faraday', '>= 0.11')
+  spec.add_dependency('faraday-digestauth', '>= 0.3.0')
   spec.add_dependency('multi_json', '>= 1.11.0')
   spec.add_runtime_dependency 'omniauth-keyyo', '~> 0.1.O'
 

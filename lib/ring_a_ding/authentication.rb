@@ -5,7 +5,11 @@ module RingADing
      # Indicates if the client was supplied  Basic Auth
      # username and password
      def basic_authenticated?
-       !!(@login && @password)
+       !!(@login && @password && @auth_type == 'basic')
+     end
+
+     def digest_authenticated?
+      !!(@login && @password && @auth_type == 'digest')
      end
 
      # Indicates if the client was supplied an OAuth
@@ -33,7 +37,7 @@ module RingADing
      end
 
      def set_creds_given_auth_type
-      if @auth_type == 'basic'
+      if @auth_type == 'basic' || @auth_type == 'digest'
         @login = @api_key
         @password = @api_secret
       elsif @auth_type == 'token'
