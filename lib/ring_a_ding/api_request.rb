@@ -96,7 +96,12 @@ module RingADing
     end
 
     def parse_response(response)
-      response.body
+      # REFACTO => To improve to correctly handle HTML errors
+      if response.headers["content-type"].include?('html') && response.body == 'OK'
+        return Response.new(headers: response.headers, body: response.body)
+      else
+        parse_json_response(response)
+      end
     end
 
     # Refacto => needs to be reviewed
