@@ -78,7 +78,7 @@ module RingADing
       return @request_builder.client.connect
     end
 
-    def parse_response(response)
+    def parse_json_response(response)
       parsed_response = nil
       if response.body && !response.body.empty?
         begin
@@ -93,6 +93,10 @@ module RingADing
         end
       end
       parsed_response
+    end
+
+    def parse_response(response)
+      response.body
     end
 
     # Refacto => needs to be reviewed
