@@ -78,7 +78,7 @@ module RingADing
       return @request_builder.client.connect
     end
 
-    def parse_response(response)
+    def parse_json_response(response)
       parsed_response = nil
       if response.body && !response.body.empty?
         begin
@@ -93,6 +93,15 @@ module RingADing
         end
       end
       parsed_response
+    end
+
+    def parse_response(response)
+      # REFACTO => To improve to correctly handle HTML errors
+      if response.headers["content-type"].include?('html') && response.body == 'OK'
+        return Response.new(headers: response.headers, body: response.body)
+      else
+        parse_json_response(response)
+      end
     end
 
     # Refacto => needs to be reviewed

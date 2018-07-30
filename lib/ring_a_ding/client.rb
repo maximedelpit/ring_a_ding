@@ -1,4 +1,3 @@
-# TO DO : Replace KeyyoError with Internal Error
 module RingADing
   class Client
 
@@ -39,7 +38,7 @@ module RingADing
 
     def handle_error
       if MANDATORY_PARAMS.all? {|_attr| self.send(_attr).nil? || self.send(_attr).empty? }
-        raise KeyyoError.new("Client must have following keys: #{MANDATORY_PARAMS.joins(', ')}", {title: "ClientAttributeError", error: 500})
+        raise InternalError, "Client must have following keys: #{MANDATORY_PARAMS.joins(', ')}"
       end
     end
 

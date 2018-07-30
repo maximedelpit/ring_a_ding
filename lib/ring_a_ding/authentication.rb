@@ -1,4 +1,4 @@
-# TO DO : Replace KeyyoError with Internal Error
+# TO DO : Replace KeyyoError with InternalError ?
 # Inspiration form Octokit gem
 module RingADing
   module Authentication
